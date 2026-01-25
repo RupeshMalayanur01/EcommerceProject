@@ -25,20 +25,11 @@ public class ProductController {
     @GetMapping()
     public List<FakeStoreProductResponseDto> getAllProducts(){
         List<Product> products = productService.getAllProducts();
-        List<FakeStoreProductResponseDto> responseDtos = new ArrayList<>();
+        List<FakeStoreProductResponseDto> productDtos = new ArrayList<>();
         for (Product product : products) {
-            FakeStoreProductResponseDto dto = new FakeStoreProductResponseDto();
-            dto.setId(product.getId());
-            dto.setTitle(product.getTitle());
-            dto.setPrice(product.getPrice());
-            dto.setDescription(product.getDescription());
-            dto.setImage(product.getImageUrl());
-            if (product.getCategory() != null) {
-                dto.setCategory(product.getCategory().getName());
-            }
-            responseDtos.add(dto);
+            productDtos.add(new FakeStoreProductResponseDto().fromProduct(product));
         }
-        return responseDtos;
+        return productDtos;
     }
 
     @GetMapping("/{id}")
@@ -47,16 +38,7 @@ public class ProductController {
         if (product == null) {
             throw new ProductNotExistsException("Product with id " + id + " doesn't exist");
         }
-        FakeStoreProductResponseDto dto = new FakeStoreProductResponseDto();
-        dto.setId(product.getId());
-        dto.setTitle(product.getTitle());
-        dto.setPrice(product.getPrice());
-        dto.setDescription(product.getDescription());
-        dto.setImage(product.getImageUrl());
-        if (product.getCategory() != null) {
-            dto.setCategory(product.getCategory().getName());
-        }
-        return dto;
+        return new FakeStoreProductResponseDto().fromProduct(product);
     }
 
     @PostMapping()
@@ -65,16 +47,7 @@ public class ProductController {
         if (product == null) {
             return null;
         }
-        FakeStoreProductResponseDto dto = new FakeStoreProductResponseDto();
-        dto.setId(product.getId());
-        dto.setTitle(product.getTitle());
-        dto.setPrice(product.getPrice());
-        dto.setDescription(product.getDescription());
-        dto.setImage(product.getImageUrl());
-        if (product.getCategory() != null) {
-            dto.setCategory(product.getCategory().getName());
-        }
-        return dto;
+        return new FakeStoreProductResponseDto().fromProduct(product);
     }
 
     @PatchMapping("/{id}")
@@ -83,16 +56,7 @@ public class ProductController {
         if (product == null) {
             throw new ProductNotExistsException("Product with id " + id + " doesn't exist");
         }
-        FakeStoreProductResponseDto dto = new FakeStoreProductResponseDto();
-        dto.setId(product.getId());
-        dto.setTitle(product.getTitle());
-        dto.setPrice(product.getPrice());
-        dto.setDescription(product.getDescription());
-        dto.setImage(product.getImageUrl());
-        if (product.getCategory() != null) {
-            dto.setCategory(product.getCategory().getName());
-        }
-        return dto;
+        return new FakeStoreProductResponseDto().fromProduct(product);
     }
 
     @PutMapping("/{id}")
@@ -101,16 +65,7 @@ public class ProductController {
         if (product == null) {
             throw new ProductNotExistsException("Product with id " + id + " doesn't exist");
         }
-        FakeStoreProductResponseDto dto = new FakeStoreProductResponseDto();
-        dto.setId(product.getId());
-        dto.setTitle(product.getTitle());
-        dto.setPrice(product.getPrice());
-        dto.setDescription(product.getDescription());
-        dto.setImage(product.getImageUrl());
-        if (product.getCategory() != null) {
-            dto.setCategory(product.getCategory().getName());
-        }
-        return dto;
+        return new FakeStoreProductResponseDto().fromProduct(product);
     }
 
     @DeleteMapping("/{id}")

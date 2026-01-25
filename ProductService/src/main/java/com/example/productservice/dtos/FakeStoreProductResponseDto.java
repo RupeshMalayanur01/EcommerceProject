@@ -30,4 +30,19 @@ public class FakeStoreProductResponseDto {
 
         return product;
     }
+
+    public FakeStoreProductResponseDto fromProduct(Product product) {
+        this.id = product.getId();
+        this.title = product.getTitle();
+        this.description = product.getDescription();
+        this.image = product.getImageUrl();
+        this.price = product.getPrice();
+
+        if (product.getCategory() != null) {
+            this.category = product.getCategory().getName();
+        }
+
+        return this;
+    }
+
 }
