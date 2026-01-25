@@ -7,18 +7,15 @@ import com.example.productservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpMessageConverterExtractor;
-import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service("fakeStoreProductService")
 public class ProductServiceFakeStoreImpl implements ProductService{
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
     @Autowired
     ProductServiceFakeStoreImpl(RestTemplate restTemplate){
         this.restTemplate = restTemplate;
@@ -71,7 +68,7 @@ public class ProductServiceFakeStoreImpl implements ProductService{
                             new HttpEntity<>(fakeStoreProductRequestDto),
                             FakeStoreProductResponseDto.class
                     );
-            if (response == null) {
+            if(response.getBody() == null){
                 return null;
             }
             return response.getBody().toProduct();
@@ -138,8 +135,7 @@ public class ProductServiceFakeStoreImpl implements ProductService{
                             FakeStoreProductResponseDto.class,
                             id
                     );
-
-            if (response == null) {
+            if(response.getBody() == null){
                 return null;
             }
             return response.getBody().toProduct();
