@@ -1,7 +1,7 @@
 package com.example.productservice.services;
 
-import com.example.productservice.dtos.FakeStoreProductRequestDto;
-import com.example.productservice.dtos.FakeStoreProductResponseDto;
+import com.example.productservice.dtos.ProductRequestDto;
+import com.example.productservice.dtos.ProductResponseDto;
 import com.example.productservice.exceptions.ExternalServiceException;
 import com.example.productservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("fakeStoreProductService")
+@Service("productServiceFakeStoreImpl")
 public class ProductServiceFakeStoreImpl implements ProductService{
     private final RestTemplate restTemplate;
     @Autowired
@@ -24,9 +24,9 @@ public class ProductServiceFakeStoreImpl implements ProductService{
     @Override
     public Product getSingleProduct(Long id) {
         try {
-            FakeStoreProductResponseDto productDto = restTemplate.getForObject(
+            ProductResponseDto productDto = restTemplate.getForObject(
                     "https://fakestoreapi.com/products/{id}",
-                    FakeStoreProductResponseDto.class, id
+                    ProductResponseDto.class, id
             );
             if (productDto == null) {
                 return null;
@@ -40,14 +40,14 @@ public class ProductServiceFakeStoreImpl implements ProductService{
     @Override
     public List<Product> getAllProducts() {
         try {
-            //Here we use FakeStoreProductResponseDto[] class instead of List<FakeStoreProductResponseDto> because RestTemplate doesn't support generic types directly
-            FakeStoreProductResponseDto[] productsDto = restTemplate.getForObject("https://fakestoreapi.com/products/",
-                    FakeStoreProductResponseDto[].class);
+            //Here we use ProductResponseDto[] class instead of List<ProductResponseDto> because RestTemplate doesn't support generic types directly
+            ProductResponseDto[] productsDto = restTemplate.getForObject("https://fakestoreapi.com/products/",
+                    ProductResponseDto[].class);
             List<Product> products = new ArrayList<>();
             if (productsDto == null) {
                 return products;
             }
-            for(FakeStoreProductResponseDto productDto : productsDto){
+            for(ProductResponseDto productDto : productsDto){
                 products.add(productDto.toProduct());
             }
             return products;
@@ -59,14 +59,14 @@ public class ProductServiceFakeStoreImpl implements ProductService{
     @Override
     public Product replaceProduct(Long id, Product product) {
         try {
-            FakeStoreProductRequestDto fakeStoreProductRequestDto = new FakeStoreProductRequestDto().fromProduct(product);
+            ProductRequestDto productRequestDto = new ProductRequestDto().fromProduct(product);
             String url = "https://fakestoreapi.com/products/" + id;
-            ResponseEntity<FakeStoreProductResponseDto> response =
+            ResponseEntity<ProductResponseDto> response =
                     restTemplate.exchange(
                             url,
                             HttpMethod.PUT,
-                            new HttpEntity<>(fakeStoreProductRequestDto),
-                            FakeStoreProductResponseDto.class
+                            new HttpEntity<>(productRequestDto),
+                            ProductResponseDto.class
                     );
             if(response.getBody() == null){
                 return null;
@@ -89,8 +89,8 @@ public class ProductServiceFakeStoreImpl implements ProductService{
     @Override
     public Product addNewProduct(Product product) {
         try {
-            FakeStoreProductRequestDto fakeStoreProductDto = new FakeStoreProductRequestDto().fromProduct(product);
-            FakeStoreProductResponseDto response = restTemplate.postForObject("https://fakestoreapi.com/products/", fakeStoreProductDto, FakeStoreProductResponseDto.class);
+            ProductRequestDto fakeStoreProductDto = new ProductRequestDto().fromProduct(product);
+            ProductResponseDto response = restTemplate.postForObject("https://fakestoreapi.com/products/", fakeStoreProductDto, ProductResponseDto.class);
             if (response == null) {
                 return null;
             }
@@ -104,7 +104,7 @@ public class ProductServiceFakeStoreImpl implements ProductService{
     public Product updateProduct(Long id, Product product) {
         try {
 
-            FakeStoreProductRequestDto fakeStoreProductDto = new FakeStoreProductRequestDto();
+            ProductRequestDto fakeStoreProductDto = new ProductRequestDto();
             if (product.getTitle() != null) {
                 fakeStoreProductDto.setTitle(product.getTitle());
             }
@@ -124,15 +124,15 @@ public class ProductServiceFakeStoreImpl implements ProductService{
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<FakeStoreProductRequestDto> entity =
+            HttpEntity<ProductRequestDto> entity =
                     new HttpEntity<>(fakeStoreProductDto, headers);
 
-            ResponseEntity<FakeStoreProductResponseDto> response =
+            ResponseEntity<ProductResponseDto> response =
                     restTemplate.exchange(
                             "https://fakestoreapi.com/products/{id}",
                             HttpMethod.PATCH,
                             entity,
-                            FakeStoreProductResponseDto.class,
+                            ProductResponseDto.class,
                             id
                     );
             if(response.getBody() == null){

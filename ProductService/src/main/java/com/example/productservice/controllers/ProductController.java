@@ -1,7 +1,7 @@
 package com.example.productservice.controllers;
 
-import com.example.productservice.dtos.FakeStoreProductRequestDto;
-import com.example.productservice.dtos.FakeStoreProductResponseDto;
+import com.example.productservice.dtos.ProductRequestDto;
+import com.example.productservice.dtos.ProductResponseDto;
 import com.example.productservice.exceptions.ProductNotExistsException;
 import com.example.productservice.models.Product;
 import com.example.productservice.services.ProductService;
@@ -20,54 +20,54 @@ public class ProductController {
     private final ProductService productService;
 
     @Autowired
-    ProductController(@Qualifier("fakeStoreProductService") ProductService productService){
+    ProductController(@Qualifier("productServiceDBImpl") ProductService productService){
         this.productService = productService;
     }
 
     @GetMapping()
-    public ResponseEntity<List<FakeStoreProductResponseDto>> getAllProducts(){
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts(){
         List<Product> products = productService.getAllProducts();
-        List<FakeStoreProductResponseDto> productDtos = new ArrayList<>();
+        List<ProductResponseDto> productDtos = new ArrayList<>();
         for (Product product : products) {
-            productDtos.add(new FakeStoreProductResponseDto().fromProduct(product));
+            productDtos.add(new ProductResponseDto().fromProduct(product));
         }
         return ResponseEntity.ok(productDtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FakeStoreProductResponseDto> getSingleProduct(@PathVariable("id") Long id) throws ProductNotExistsException {
+    public ResponseEntity<ProductResponseDto> getSingleProduct(@PathVariable("id") Long id) throws ProductNotExistsException {
         Product product = productService.getSingleProduct(id);
         if (product == null) {
             throw new ProductNotExistsException("Product with id " + id + " doesn't exist");
         }
-        return ResponseEntity.ok(new FakeStoreProductResponseDto().fromProduct(product));
+        return ResponseEntity.ok(new ProductResponseDto().fromProduct(product));
     }
 
     @PostMapping()
-    public ResponseEntity<FakeStoreProductResponseDto> addNewProduct(@RequestBody FakeStoreProductRequestDto fakeStoreProductRequestDto){
-        Product product = productService.addNewProduct(fakeStoreProductRequestDto.toProduct());
+    public ResponseEntity<ProductResponseDto> addNewProduct(@RequestBody ProductRequestDto productRequestDto){
+        Product product = productService.addNewProduct(productRequestDto.toProduct());
         if (product == null) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(new FakeStoreProductResponseDto().fromProduct(product));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponseDto().fromProduct(product));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<FakeStoreProductResponseDto> updateProduct(@PathVariable("id") Long id, @RequestBody FakeStoreProductRequestDto fakeStoreProductRequestDto) throws ProductNotExistsException {
-        Product product = productService.updateProduct(id, fakeStoreProductRequestDto.toProduct());
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable("id") Long id, @RequestBody ProductRequestDto productRequestDto) throws ProductNotExistsException {
+        Product product = productService.updateProduct(id, productRequestDto.toProduct());
         if (product == null) {
             throw new ProductNotExistsException("Product with id " + id + " doesn't exist");
         }
-        return ResponseEntity.ok(new FakeStoreProductResponseDto().fromProduct(product));
+        return ResponseEntity.ok(new ProductResponseDto().fromProduct(product));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FakeStoreProductResponseDto> replaceProduct(@PathVariable("id") Long id, @RequestBody FakeStoreProductRequestDto fakeStoreProductRequestDto) throws ProductNotExistsException {
-        Product product = productService.replaceProduct(id, fakeStoreProductRequestDto.toProduct());
+    public ResponseEntity<ProductResponseDto> replaceProduct(@PathVariable("id") Long id, @RequestBody ProductRequestDto productRequestDto) throws ProductNotExistsException {
+        Product product = productService.replaceProduct(id, productRequestDto.toProduct());
         if (product == null) {
             throw new ProductNotExistsException("Product with id " + id + " doesn't exist");
         }
-        return ResponseEntity.ok(new FakeStoreProductResponseDto().fromProduct(product));
+        return ResponseEntity.ok(new ProductResponseDto().fromProduct(product));
     }
 
     @DeleteMapping("/{id}")

@@ -2,14 +2,13 @@ package com.example.productservice.dtos;
 
 import com.example.productservice.models.Category;
 import com.example.productservice.models.Product;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class FakeStoreProductRequestDto {
+public class ProductResponseDto {
+    private Long id;
     private String title;
     private Double price;
     private String image;
@@ -18,21 +17,22 @@ public class FakeStoreProductRequestDto {
 
     public Product toProduct() {
         Product product = new Product();
+        product.setId(this.id);
         product.setTitle(this.title);
         product.setDescription(this.description);
         product.setImageUrl(this.image);
-        product.setPrice(this.price);
         
-        if (this.category != null) {
-            Category category = new Category();
-            category.setName(this.category);
-            product.setCategory(category);
-        }
+        Category category = new Category();
+        category.setName(this.category);
+        product.setCategory(category);
+        
+        product.setPrice(this.price);
 
         return product;
     }
 
-    public FakeStoreProductRequestDto fromProduct(Product product) {
+    public ProductResponseDto fromProduct(Product product) {
+        this.id = product.getId();
         this.title = product.getTitle();
         this.description = product.getDescription();
         this.image = product.getImageUrl();
@@ -44,4 +44,5 @@ public class FakeStoreProductRequestDto {
 
         return this;
     }
+
 }
