@@ -5,6 +5,7 @@ import com.example.productservice.dtos.ProductResponseDto;
 import com.example.productservice.exceptions.ExternalServiceException;
 import com.example.productservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -13,7 +14,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("productServiceFakeStoreImpl")
+@Service
+@Profile("fakestore")
 public class ProductServiceFakeStoreImpl implements ProductService{
     private final RestTemplate restTemplate;
     @Autowired

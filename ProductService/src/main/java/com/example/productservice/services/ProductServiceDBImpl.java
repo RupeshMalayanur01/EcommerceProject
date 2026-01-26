@@ -6,12 +6,14 @@ import com.example.productservice.models.Product;
 import com.example.productservice.repositories.CategoryRepository;
 import com.example.productservice.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service("productServiceDBImpl")
+@Service
+@Profile("db")
 public class ProductServiceDBImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;

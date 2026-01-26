@@ -6,7 +6,6 @@ import com.example.productservice.exceptions.ProductNotExistsException;
 import com.example.productservice.models.Product;
 import com.example.productservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,7 @@ public class ProductController {
     private final ProductService productService;
 
     @Autowired
-    ProductController(@Qualifier("productServiceDBImpl") ProductService productService){
+    ProductController(ProductService productService){
         this.productService = productService;
     }
 
