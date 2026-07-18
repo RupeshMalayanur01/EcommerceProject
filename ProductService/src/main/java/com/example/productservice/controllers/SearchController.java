@@ -2,18 +2,17 @@ package com.example.productservice.controllers;
 
 import com.example.productservice.dtos.GetProductDto;
 import com.example.productservice.dtos.search.FilterDto;
+import com.example.productservice.dtos.search.SearchRequestDto;
 import com.example.productservice.dtos.search.SearchResponseDto;
 import com.example.productservice.dtos.search.SortingCriteria;
+import com.example.productservice.exceptions.ProductNotExistsException;
 import com.example.productservice.models.Product;
 import com.example.productservice.services.SearchService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,15 +26,11 @@ public class SearchController {
         this.searchService = searchService;
     }
 
-    @GetMapping("/")
-    public SearchResponseDto search(@RequestParam("query") String query,
-                                    @RequestParam("filters") List<FilterDto> filters,
-                                    @RequestParam("sortBy") SortingCriteria sortingCriteria,
-                                    @RequestParam("pageNumber") int pageNumber,
-                                    @RequestParam("pageSize") int pageSize) {
+    @PostMapping("/")
+    public SearchResponseDto search(@RequestBody SearchRequestDto searchRequest) throws ProductNotExistsException {
         SearchResponseDto response = new SearchResponseDto();
         Page<Product> productsPage =  searchService.search(
-                query, filters, sortingCriteria, pageNumber, pageSize);
+                searchRequest.getQuery(), searchRequest.getFilters(), searchRequest.getSortBy(), searchRequest.getPageNumber(), searchRequest.getPageSize());
 
         List<GetProductDto> getProductDtos = productsPage.getContent().stream()
                 .map(GetProductDto::from)
@@ -52,10 +47,21 @@ public class SearchController {
     @GetMapping("/byCategory")
     public SearchResponseDto simpleSearch(@RequestParam("query") String query,
                                           @RequestParam("category") Long categoryId,
-                                          @RequestParam("pageNumber") int pageNumber,
+                                          @RequestParam("pageNumber") int pageNumber, //Spring Data page numbers start at 0.
                                           @RequestParam("pageSize") int pageSize,
-                                          @RequestParam("sortingAttribute") String sortingAttribute
-    ) {
-        return null;
+                                          @RequestParam("sortBy") String sortingAttribute
+    ) throws ProductNotExistsException {
+
+        SearchResponseDto response = new SearchResponseDto();
+        Page<Product> productsPage =  searchService.simpleSearch(query, categoryId, pageNumber, pageSize, sortingAttribute);
+        List<GetProductDto> getProductDtos = productsPage.getContent().stream()
+                .map(GetProductDto::from)
+                .collect(Collectors.toList());
+
+        Pageable pageable = PageRequest.of(productsPage.getNumber(), productsPage.getSize(), productsPage.getSort());
+        Page<GetProductDto> getProductDtoPage = new PageImpl<>(getProductDtos, pageable, productsPage.getTotalElements());
+
+        response.setProductsPage(getProductDtoPage);
+        return response;
     }
 }

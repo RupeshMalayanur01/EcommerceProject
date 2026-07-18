@@ -2,6 +2,7 @@ package com.example.productservice.services;
 
 import com.example.productservice.dtos.search.FilterDto;
 import com.example.productservice.dtos.search.SortingCriteria;
+import com.example.productservice.exceptions.ProductNotExistsException;
 import com.example.productservice.models.Product;
 import com.example.productservice.repositories.ProductRepository;
 import com.example.productservice.services.filteringService.FilterFactory;
@@ -26,7 +27,7 @@ public class SearchService {
             int pageNumber, // 1    // 2
             int pageSize    // 5    // 5 -> (5 * (pageNumber - 1)) -> (pageNumber * pageSize) - 1
             //                           [5 -> 9]
-    ) {
+    ) throws ProductNotExistsException {
         List<Product> products = productRepository
                 .findByTitleContaining(query);
 
@@ -36,11 +37,16 @@ public class SearchService {
             ).apply(products, filterDto.getValues());
         }
 
+        if(products.isEmpty()) {
+            throw new ProductNotExistsException("No products found for the given search criteria.");
+        }
+
         products = SorterFactory.getSorterByCriteria(sortingCriteria).sort(products);
 
         List<Product> productsOnPage = new ArrayList<>();
 
         for (int i = pageSize * (pageNumber - 1); i <= (pageSize * pageNumber) - 1; ++i) {
+            if(i >= products.size()) break;
             productsOnPage.add(products.get(i));
         }
 
@@ -58,7 +64,7 @@ public class SearchService {
         // select * from products
         // where title like "%query%"
         // and categoryID = {categoryId}
-        // limit {pageSize} offset pageNumbver * pageSize
+        // limit {pageSize} offset pageNumber * pageSize
         // orderBy sortingAttribute;
         Page<Product> products = productRepository
                 .findAllByTitleContainingAndCategory_Id(
